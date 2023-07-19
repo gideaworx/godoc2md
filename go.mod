@@ -1,3 +1,7 @@
-module github.com/davecheney/godoc2md
+module github.com/gideaworx/godoc2md
 
-require golang.org/x/tools v0.0.0-20181011021141-0e57ebad1d6b
+go 1.20
+
+require golang.org/x/tools v0.11.0
+
+require github.com/yuin/goldmark v1.5.4 // indirect

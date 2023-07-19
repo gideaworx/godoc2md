@@ -4,10 +4,9 @@
 
 // godoc2md converts godoc formatted package documentation into Markdown format.
 //
-//
 // Usage
 //
-//    godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
+//	godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
 package main
 
 import (
@@ -15,7 +14,6 @@ import (
 	"flag"
 	"fmt"
 	"go/build"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -170,14 +168,11 @@ func main() {
 	pres.TabWidth = *tabWidth
 	pres.ShowTimestamps = *showTimestamps
 	pres.ShowPlayground = *showPlayground
-	pres.ShowExamples = *showExamples
 	pres.DeclLinks = *declLinks
-	pres.SrcMode = false
-	pres.HTMLMode = false
 	pres.URLForSrcPos = srcPosLinkFunc
 
 	if *altPkgTemplate != "" {
-		buf, err := ioutil.ReadFile(*altPkgTemplate)
+		buf, err := os.ReadFile(*altPkgTemplate)
 		if err != nil {
 			log.Fatal(err)
 		}
