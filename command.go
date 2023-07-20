@@ -1,3 +1,5 @@
+// Taken from x/tools@@v0.0.0-20181011021141-0e57ebad1d6b/godoc/cmdline.go
+
 package main
 
 import (
@@ -25,7 +27,7 @@ const (
 	builtinPkgPath = "builtins"
 )
 
-func runCommand(w io.Writer, fs vfs.NameSpace, pres *godoc.Presentation, packageText *template.Template, args []string) error {
+func RunCommand(w io.Writer, fs vfs.NameSpace, pres *godoc.Presentation, packageText *template.Template, args []string) error {
 	path := args[0]
 	srcMode := false
 	cmdMode := strings.HasPrefix(path, cmdPrefix)

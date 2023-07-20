@@ -2,11 +2,12 @@
 
 > godoc2md
 godoc2md converts godoc formatted package documentation into Markdown format.
+If the current directory is inside a go module, it will use go.mod to find the
+source to document. Otherwise, it will use $GOPATH
 
-Usage
+# Usage
 
-
-	GO111MODULE=off GOPATH=$(go env GOPATH) godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
+godoc2md github.com/gideaworx/godoc2md > ./README.md
 
 
 

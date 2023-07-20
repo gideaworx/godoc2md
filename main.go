@@ -3,10 +3,12 @@
 // license that can be found in the LICENSE file.
 
 // godoc2md converts godoc formatted package documentation into Markdown format.
+// If the current directory is inside a go module, it will use go.mod to find the
+// source to document. Otherwise, it will use $GOPATH
 //
-// Usage
+// # Usage
 //
-//	GO111MODULE=off GOPATH=$(go env GOPATH) godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
+// godoc2md github.com/gideaworx/godoc2md > ./README.md
 package main
 
 import (
@@ -17,17 +19,17 @@ import (
 	"log"
 	"os"
 	"path"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"text/template"
 
 	"golang.org/x/tools/godoc"
-	"golang.org/x/tools/godoc/vfs"
 )
 
 var (
 	verbose = flag.Bool("v", false, "verbose mode")
+
+	buildCtx = build.Default
 
 	// file system roots
 	// TODO(gri) consider the invariant that goroot always end in '/'
@@ -56,7 +58,6 @@ func usage() {
 
 var (
 	pres *godoc.Presentation
-	fs   = vfs.NameSpace{}
 
 	funcs = map[string]interface{}{
 		"comment_md":  commentMdFunc,
@@ -82,7 +83,7 @@ func mdFunc(text string) string {
 }
 
 func preFunc(text string) string {
-	return "``` go\n" + text + "\n```"
+	return "```go\n" + text + "\n```"
 }
 
 // Original Source https://github.com/golang/tools/blob/master/godoc/godoc.go#L562
@@ -151,13 +152,8 @@ func main() {
 		usage()
 	}
 
-	// use file system of underlying OS
-	fs.Bind("/", vfs.OS(*goroot), "/", vfs.BindReplace)
-
-	// Bind $GOPATH trees into Go root.
-	for _, p := range filepath.SplitList(build.Default.GOPATH) {
-		fs.Bind("/src/pkg", vfs.OS(p), "/src", vfs.BindAfter)
-	}
+	dirsInit()
+	fs := GatherRoots(*goroot)
 
 	corpus := godoc.NewCorpus(fs)
 	corpus.Verbose = *verbose
@@ -180,7 +176,7 @@ func main() {
 		packageTemplate = readTemplate("package.txt", pkgTemplate)
 	}
 
-	if err := runCommand(os.Stdout, fs, pres, packageTemplate, flag.Args()); err != nil {
+	if err := RunCommand(os.Stdout, fs, pres, packageTemplate, flag.Args()); err != nil {
 		log.Fatal(err)
 	}
 }
