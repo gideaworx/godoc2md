@@ -37,8 +37,6 @@ var (
 	tabWidth       = flag.Int("tabwidth", 4, "tab width")
 	showTimestamps = flag.Bool("timestamps", false, "show timestamps with directory listings")
 	altPkgTemplate = flag.String("template", "", "path to an alternate template file")
-	showPlayground = flag.Bool("play", false, "enable playground in web interface")
-	showExamples   = flag.Bool("ex", false, "show examples in command line mode")
 	declLinks      = flag.Bool("links", true, "link identifiers to their declarations")
 
 	// The hash format for Github is the default `#L%d`; but other source control platforms do not
@@ -51,7 +49,7 @@ var (
 
 func usage() {
 	fmt.Fprintf(os.Stderr,
-		"usage: godoc2md package [name ...]\n")
+		"local usage: godoc2md package [name ...]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -167,21 +165,22 @@ func main() {
 	pres = godoc.NewPresentation(corpus)
 	pres.TabWidth = *tabWidth
 	pres.ShowTimestamps = *showTimestamps
-	pres.ShowPlayground = *showPlayground
+	pres.ShowPlayground = false
 	pres.DeclLinks = *declLinks
 	pres.URLForSrcPos = srcPosLinkFunc
 
+	var packageTemplate *template.Template
 	if *altPkgTemplate != "" {
 		buf, err := os.ReadFile(*altPkgTemplate)
 		if err != nil {
 			log.Fatal(err)
 		}
-		pres.PackageText = readTemplate("package.txt", string(buf))
+		packageTemplate = readTemplate("package.txt", string(buf))
 	} else {
-		pres.PackageText = readTemplate("package.txt", pkgTemplate)
+		packageTemplate = readTemplate("package.txt", pkgTemplate)
 	}
 
-	if err := godoc.CommandLine(os.Stdout, fs, pres, flag.Args()); err != nil {
-		log.Print(err)
+	if err := runCommand(os.Stdout, fs, pres, packageTemplate, flag.Args()); err != nil {
+		log.Fatal(err)
 	}
 }
