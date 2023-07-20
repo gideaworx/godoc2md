@@ -6,7 +6,7 @@ godoc2md converts godoc formatted package documentation into Markdown format.
 Usage
 
 
-	godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
+	GO111MODULE=off GOPATH=$(go env GOPATH) godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
 
 
 

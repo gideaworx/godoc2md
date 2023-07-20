@@ -6,7 +6,7 @@
 //
 // Usage
 //
-//	godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
+//	GO111MODULE=off GOPATH=$(go env GOPATH) godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
 package main
 
 import (
