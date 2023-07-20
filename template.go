@@ -3,6 +3,7 @@ package main
 var pkgTemplate = `{{with .PDoc}}
 {{if $.IsMain}}
 > {{ base .ImportPath }}
+
 {{comment_md .Doc}}
 {{else}}
 # {{ .Name }}
